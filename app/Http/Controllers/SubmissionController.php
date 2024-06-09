@@ -18,10 +18,16 @@ class SubmissionController extends Controller
             'message' => 'required|string',
         ]);
 
+        // Check if validation fails
         if ($validator->fails()) {
+            // Log validation errors
+            Log::info('Validation failed', ['errors' => $validator->errors()]);
+            // Return validation errors as JSON response
             return response()->json(['error' => $validator->errors()], 422);
         }
-        Log::info('Successfully validate the request');
+
+        // Log successful validation
+        Log::info('Successfully validated the request', ['data' => $request->all()]);
 
         // Dispatch the job to process the submission
         ProcessSubmission::dispatch($request->all());
