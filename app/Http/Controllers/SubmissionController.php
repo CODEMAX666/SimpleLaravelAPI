@@ -21,7 +21,8 @@ class SubmissionController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        
+        Log::info('Successfully validate the request');
+
         // Dispatch the job to process the submission
         ProcessSubmission::dispatch($request->all());
 
