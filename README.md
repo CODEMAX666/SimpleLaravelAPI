@@ -7,7 +7,7 @@
 3. Copy `.env.example` to `.env` and configure your database settings.
 4. Run `php artisan migrate` to create the necessary database tables.
 5. Run `php artisan serve` to start the development server.
-5. Run `php artisan quework` to start the queue server.
+5. Run `php artisan queue:work` to start the queue server.
 
 ## Testing the API
 
