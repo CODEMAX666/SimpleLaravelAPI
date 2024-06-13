@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Jobs\ProcessSubmission;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreSubmissionRequest;
+use App\Http\Resources\SubmissionResource;
 use App\Services\SubmissionService;
 
 /**
@@ -21,7 +20,7 @@ class SubmissionController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/submit",
+     *     path="/submissions",
      *     summary="Submit data",
      *     description="Submit data for processing",
      *     @OA\RequestBody(
@@ -36,10 +35,10 @@ class SubmissionController extends Controller
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
-    public function submit(Request $request)
+    public function store(StoreSubmissionRequest $request)
     {
         $response = $this->submissionService->handleSubmission($request);
 
-        return response()->json($response['data'], $response['status']);
+        return response()->json($response, 200);
     }
 }

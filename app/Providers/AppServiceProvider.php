@@ -3,20 +3,16 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\SubmissionRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
-    protected $listen = [
-        'App\Events\SubmissionSaved' => [
-            'App\Listeners\LogSubmissionSaved',
-        ],
-    ];
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(SubmissionRepository::class);
     }
 
     /**
@@ -25,9 +21,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        //parent::boot();
-        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::except([
-            'submit'
-        ]);
     }
 }

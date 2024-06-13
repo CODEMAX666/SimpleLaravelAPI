@@ -2,38 +2,30 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use App\Jobs\ProcessSubmission;
+use Illuminate\Support\Facades\Log;
+use App\Repositories\SubmissionRepository;
+use App\Http\Requests\StoreSubmissionRequest;
 
 class SubmissionService
 {
-    public function handleSubmission(Request $request)
+    protected $submissionRepository;
+
+    public function __construct(SubmissionRepository $submissionRepository)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'message' => 'required|string',
-        ]);
+        $this->submissionRepository = $submissionRepository;
+    }
 
-        if ($validator->fails()) {
-            Log::info('Validation failed', ['errors' => $validator->errors()]);
-            return [
-                'data' => ['error' => $validator->errors()],
-                'status' => 422
-            ];
-        }
-
+    public function handleSubmission(StoreSubmissionRequest $request)
+    {
         Log::info('Successfully validated the request', ['data' => $request->all()]);
 
-        ProcessSubmission::dispatch($request->all());
+        ProcessSubmission::dispatch($request->validated());
 
         Log::info('ProcessSubmission job dispatched.');
 
         return [
-            'data' => ['message' => 'Submission is being processed.'],
-            'status' => 200
+            'message' => 'Submission is being processed.'
         ];
     }
 }
