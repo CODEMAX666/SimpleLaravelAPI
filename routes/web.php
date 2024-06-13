@@ -8,5 +8,3 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-Route::post('/api/submit', [SubmissionController::class, 'submit']);

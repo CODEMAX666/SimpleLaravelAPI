@@ -19,10 +19,10 @@ class ProcessSubmission implements ShouldQueue
     protected $data;
     protected $submissionRepository;
 
-    public function __construct(array $data, SubmissionRepository $submissionRepository)
+    public function __construct(array $data)
     {
         $this->data = $data;
-        $this->submissionRepository = $submissionRepository;
+        $this->submissionRepository = app(SubmissionRepository::class);
     }
 
     public function handle()

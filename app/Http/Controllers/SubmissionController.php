@@ -22,7 +22,7 @@ class SubmissionController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/submissions",
+     *     path="/submit",
      *     summary="Submit data",
      *     description="Submit data for processing",
      *     @OA\RequestBody(
@@ -37,7 +37,7 @@ class SubmissionController extends Controller
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
-    public function store(StoreSubmissionRequest $request)
+    public function submit(StoreSubmissionRequest $request)
     {
         try {
             $response = $this->submissionService->handleSubmission($request);
