@@ -31,3 +31,8 @@ route-clear:
 # Clear view cache
 view-clear:
 	php artisan view:clear
+
+# Generate Swagger documentation
+swagger:
+	php artisan l5-swagger:generate
+
