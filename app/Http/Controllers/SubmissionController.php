@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSubmissionRequest;
+use App\DTOs\SubmissionDTO;
 use App\Http\Resources\SubmissionResource;
 use App\Services\SubmissionService;
 use App\Exceptions\SubmissionValidationException;
@@ -40,7 +41,8 @@ class SubmissionController extends Controller
     public function submit(StoreSubmissionRequest $request)
     {
         try {
-            $response = $this->submissionService->handleSubmission($request);
+            $submissionDTO = new SubmissionDTO($request->validated());
+            $response = $this->submissionService->handleSubmission($submissionDTO);
         } catch (SubmissionValidationException $e) {
             return $e->render($request);
         } catch (SubmissionProcessingException $e) {
