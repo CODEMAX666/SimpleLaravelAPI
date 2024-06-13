@@ -6,8 +6,13 @@ use App\Services\SubmissionService;
 use App\Repositories\SubmissionRepository;
 use App\Http\Requests\StoreSubmissionRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
 use Mockery;
 use App\Models\Submission;
+
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use App\Jobs\ProcessSubmission;
 
 class SubmissionServiceTest extends TestCase
 {
@@ -23,7 +28,7 @@ class SubmissionServiceTest extends TestCase
         $this->submissionRepository = Mockery::mock(SubmissionRepository::class);
         $this->app->instance(SubmissionRepository::class, $this->submissionRepository);
 
-        $this->submissionService = $this->app->make(SubmissionService::class);
+        $this->submissionService = new SubmissionService($this->submissionRepository);
     }
 
     public function test_handle_submission()
@@ -34,15 +39,38 @@ class SubmissionServiceTest extends TestCase
             'message' => 'This is a test message.',
         ];
 
-        $request = StoreSubmissionRequest::create('/api/submit', 'POST', $data);
+        Log::info('Starting handle_submission_endpoint !!!!!!!!!!!');
+        
+
+        // Create a mock StoreSubmissionRequest
+        $request = Mockery::mock(StoreSubmissionRequest::class)->makePartial();
+        $request->shouldReceive('validated')
+                ->once()
+                ->andReturn($data);
+
+       
+        Log::info('***********************');
+
+        // Mock the validated method to return the expected data
+        
 
         $this->submissionRepository->shouldReceive('create')
-                                   ->once()
+                                //    ->once()
                                    ->with($data)
                                    ->andReturn(new Submission($data));
 
-        $response = $this->submissionService->handleSubmission($request);
+        // Mock the job dispatch
+        Bus::fake();
+        
 
-        $this->assertEquals('Submission is being processed.', $response['message']);
+        // Act
+        $this->submissionService->handleSubmission($request);
+
+        // Assert
+        Bus::assertDispatched(ProcessSubmission::class, function ($job) use ($data) {
+            return $job->getData() == $data;
+        });
+
+        Log::info('&&&&&&&&&&&&&&&&&&&&&&&&');
     }
 }

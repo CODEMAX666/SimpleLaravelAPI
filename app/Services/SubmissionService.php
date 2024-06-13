@@ -19,15 +19,16 @@ class SubmissionService
 
     public function handleSubmission(StoreSubmissionRequest $request)
     {
+        Log::info('@@@@@@@@@@@@@@@@@@@@@@@@@1234');
         $validated = $request->validated();
-
+        Log::info($validated);
         try {
             ProcessSubmission::dispatch($validated);
             Log::info('ProcessSubmission job dispatched.');
         } catch (\Exception $e) {
             throw new SubmissionProcessingException('Failed to dispatch ProcessSubmission job.');
         }
-
+        Log::info('###############################');
         return [
             'message' => 'Submission is being processed.'
         ];

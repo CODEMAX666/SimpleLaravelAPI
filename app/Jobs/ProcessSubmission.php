@@ -21,6 +21,7 @@ class ProcessSubmission implements ShouldQueue
 
     public function __construct(array $data)
     {
+        Log::info('Inialization ProcessSubmission:');
         $this->data = $data;
         $this->submissionRepository = app(SubmissionRepository::class);
     }
@@ -36,5 +37,10 @@ class ProcessSubmission implements ShouldQueue
         event(new SubmissionSaved($submission));
 
         Log::info('SubmissionSaved event dispatched.');
+    }
+
+    public function getData()
+    {
+        return $this->data;
     }
 }
