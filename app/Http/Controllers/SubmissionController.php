@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSubmissionRequest;
 use App\Http\Resources\SubmissionResource;
 use App\Services\SubmissionService;
+use App\Exceptions\SubmissionValidationException;
+use App\Exceptions\SubmissionProcessingException;
 
 /**
  * @OA\Info(title="My API", version="1.0")
@@ -37,7 +39,13 @@ class SubmissionController extends Controller
      */
     public function store(StoreSubmissionRequest $request)
     {
-        $response = $this->submissionService->handleSubmission($request);
+        try {
+            $response = $this->submissionService->handleSubmission($request);
+        } catch (SubmissionValidationException $e) {
+            return $e->render($request);
+        } catch (SubmissionProcessingException $e) {
+            return $e->render($request);
+        }
 
         return response()->json($response, 200);
     }

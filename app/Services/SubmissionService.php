@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use App\Http\Requests\StoreSubmissionRequest;
+use App\Exceptions\SubmissionProcessingException;
 use App\Jobs\ProcessSubmission;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\SubmissionRepository;
-use App\Http\Requests\StoreSubmissionRequest;
 
 class SubmissionService
 {
@@ -18,11 +19,14 @@ class SubmissionService
 
     public function handleSubmission(StoreSubmissionRequest $request)
     {
-        Log::info('Successfully validated the request', ['data' => $request->all()]);
+        $validated = $request->validated();
 
-        ProcessSubmission::dispatch($request->validated());
-
-        Log::info('ProcessSubmission job dispatched.');
+        try {
+            ProcessSubmission::dispatch($validated);
+            Log::info('ProcessSubmission job dispatched.');
+        } catch (\Exception $e) {
+            throw new SubmissionProcessingException('Failed to dispatch ProcessSubmission job.');
+        }
 
         return [
             'message' => 'Submission is being processed.'
